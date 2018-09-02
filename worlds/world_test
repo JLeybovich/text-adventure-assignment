@@ -1,0 +1,44 @@
+createroom kitchen
+setname kitchen "Kitchen"
+setdescription kitchen "Pots and pans hang from the walls. The counter is covered with flour."
+creatething cake
+setname cake "cake"
+setdescription cake "a chocolate cake covered with candles"
+movething cake kitchen
+addkeyword cake cake
+addkeyword cake chocolate
+createroom dining_room
+setname dining_room "Dining Room"
+setdescription dining_room "There is a large wooden table in the middle of the room."
+createexit kitchen_to_dining_room
+setname kitchen_to_dining_room North
+setdescription kitchen_to_dining_room North
+addkeyword kitchen_to_dining_room North
+addkeyword kitchen_to_dining_room north
+addkeyword kitchen_to_dining_room N
+addkeyword kitchen_to_dining_room n
+setdestination kitchen_to_dining_room dining_room
+addexit kitchen kitchen_to_dining_room
+createexit dining_room_to_kitchen
+setname dining_room_to_kitchen South
+setdescription dining_room_to_kitchen South
+addkeyword dining_room_to_kitchen South
+addkeyword dining_room_to_kitchen south
+addkeyword dining_room_to_kitchen S
+addkeyword dining_room_to_kitchen s
+setdestination dining_room_to_kitchen kitchen
+addexit dining_room dining_room_to_kitchen
+createitem abc123
+setname abc123 "top hat"
+setdescription abc123 "a black top hat"
+addkeyword abc123 black
+addkeyword abc123 top
+addkeyword abc123 hat
+movething abc123 dining_room
+createitem def456
+setname def456 "apple"
+setdescription def456 "a red apple"
+addkeyword def456 red
+addkeyword def456 apple
+movething def456 kitchen
+movething player kitchen

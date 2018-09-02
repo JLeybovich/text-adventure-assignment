@@ -2,11 +2,22 @@ package pocketgems.mud;
 
 import pocketgems.mud.components.DescriptionComponent;
 import pocketgems.mud.components.IdentityComponent;
+import pocketgems.mud.components.InventoryComponent;
+import pocketgems.mud.components.ItemComponent;
 import pocketgems.mud.components.LocationComponent;
 import pocketgems.mud.components.PortalComponent;
 import pocketgems.mud.components.RoomComponent;
 
 public abstract class EntityFactory {
+	public static Entity createItem() {
+		Entity entity = new Entity();
+		entity.addComponent(new IdentityComponent());
+		entity.addComponent(new DescriptionComponent());
+		entity.addComponent(new LocationComponent());
+		entity.addComponent(new ItemComponent());
+		return entity;
+	}
+	
 	public static Entity createRoom() {
 		Entity entity = new Entity();
 		entity.addComponent(new IdentityComponent());
@@ -45,6 +56,7 @@ public abstract class EntityFactory {
 		entity.addComponent(descriptionComponent);
 		
 		entity.addComponent(new LocationComponent());
+		entity.addComponent(new InventoryComponent());
 		
 		return entity;
 	}

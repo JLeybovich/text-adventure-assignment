@@ -119,6 +119,10 @@ public class InputProcessor {
 			Entity thing = EntityFactory.createThing();
 			thing.getIdentityComponent().id = arguments.get(0);
 			world.AddEntity(thing);
+		} else if (command.equals("createitem")) {
+			Entity item = EntityFactory.createItem();
+			item.getIdentityComponent().id = arguments.get(0);
+			world.AddEntity(item);
 		} else if (command.equals("setname")) {
 			Entity entity = world.GetEntity(arguments.get(0));
 			entity.getDescriptionComponent().name = arguments.get(1);
@@ -185,6 +189,20 @@ public class InputProcessor {
 				
 				System.out.println();
 			}
+		} else if ((command.equals("inventory")) || (command.equals("inv")) || (command.equals("i"))) {
+			InventoryComponent inventoryComponent = world.GetPlayer().getInventoryComponent();
+			
+			if(inventoryComponent.itemIds.size() > 0) {
+				System.out.println("Your inventory:");
+				
+				for (String itemId : inventoryComponent.itemIds) {
+					Entity item = world.GetEntity(itemId);
+					System.out
+						.println("  - " + item.getDescriptionComponent().description);
+				}
+			} else {
+				System.out.println("There are no items in your inventory.");
+			}
 		} else if ((command.equals("go")) || (command.equals("move"))) {
 			Entity room = world.GetPlayer().getLocationComponent().room(world);
 			if (room != null) {
@@ -200,6 +218,52 @@ public class InputProcessor {
 			}
 			// Room not found
 			throw new EntityNotFoundException(arguments.get(0));
+		} else if ((command.equals("get")) || (command.equals("take"))) {
+			Entity item = entityInRoomOrNull(world, arguments.get(0));
+			if(item != null) {
+				ItemComponent itemComponent = item.getComponentOrNull(ItemComponent.class);
+				
+				if(itemComponent != null) {
+					IdentityComponent identityComponent = item.getIdentityComponent();
+					LocationComponent locationComponent = item.getLocationComponent();
+					
+					Entity room = locationComponent.room(world);
+					if (room != null) {
+						room.getRoomComponent().inhabitantIds.remove(identityComponent.id);
+					}
+					
+					locationComponent.roomId = world.GetPlayer().getIdentityComponent().id;
+					
+					world.GetPlayer().getInventoryComponent().itemIds.add(identityComponent.id);
+					
+					System.out.println("You acquire " + item.getDescriptionComponent().description + ".");
+				} else {
+					System.out.println("You cannot take that.");
+				}
+			} else {
+				System.out.println("Item not found.");
+			}
+			
+			System.out.println();
+		} else if (command.equals("drop")) {
+			Entity item = entityInInventoryOrNull(world, arguments.get(0));
+			if(item != null) {
+				InventoryComponent inventoryComponent = world.GetPlayer().getInventoryComponent();
+				IdentityComponent identityComponent = item.getIdentityComponent();
+				LocationComponent locationComponent = item.getLocationComponent();
+				
+				inventoryComponent.itemIds.remove(identityComponent.id);
+				
+				Entity room = world.GetPlayer().getLocationComponent().room(world);
+				if (room != null) {
+					room.getRoomComponent().inhabitantIds.add(identityComponent.id);
+					locationComponent.roomId = room.getIdentityComponent().id;
+				}
+				
+				System.out.println("You drop " + item.getDescriptionComponent().description + ".");
+			} else {
+				System.out.println("You do not have that.");
+			}	
 		} else {
 			return false;
 		}
@@ -240,6 +304,51 @@ public class InputProcessor {
 			}
 		}
 
+		throw new EntityNotFoundException(keyword);
+	}
+	
+	protected Entity entityInRoomOrNull(World world, String keyword)
+			throws ComponentNotFoundException, EntityNotFoundException {
+		try {
+			return entityInRoom(world, keyword);
+		} catch(EntityNotFoundException exception) {
+			if(exception.getEntityId() == keyword) {
+				return null;
+			}
+		} catch(Exception exception) {
+			throw exception;
+		}
+		
+		throw new EntityNotFoundException(keyword);
+	}
+	
+	protected Entity entityInInventory(World world, String keyword)
+			throws ComponentNotFoundException, EntityNotFoundException {
+		for (String itemId : world.GetPlayer().getInventoryComponent().itemIds) {
+			Entity item = world.GetEntity(itemId);
+			DescriptionComponent descriptionComponent = item.getDescriptionComponent();
+			if (descriptionComponent != null) {
+				if (descriptionComponent.keywords.contains(keyword)) {
+					return item;
+				}
+			}
+		}
+
+		throw new EntityNotFoundException(keyword);
+	}
+	
+	protected Entity entityInInventoryOrNull(World world, String keyword)
+			throws ComponentNotFoundException, EntityNotFoundException {
+		try {
+			return entityInInventory(world, keyword);
+		} catch(EntityNotFoundException exception) {
+			if(exception.getEntityId() == keyword) {
+				return null;
+			}
+		} catch(Exception exception) {
+			throw exception;
+		}
+		
 		throw new EntityNotFoundException(keyword);
 	}
 }
