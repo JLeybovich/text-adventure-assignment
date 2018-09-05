@@ -132,6 +132,7 @@ public class InputProcessor {
 		} else if (command.equals("addexit")) {
 			Entity room = world.GetEntity(arguments.get(0));
 			Entity exit = world.GetEntity(arguments.get(1));
+			exit.getPortalComponent().sourceRoomId = room.getIdentityComponent().id;
 			room.getRoomComponent().exitIds.add(exit.getIdentityComponent().id);
 		} else if (command.equals("setdestination")) {
 			Entity exit = world.GetEntity(arguments.get(0));
@@ -144,7 +145,10 @@ public class InputProcessor {
 			Entity thing = world.GetEntity(arguments.get(0));
 			Entity room = world.GetEntity(arguments.get(1));
 			moveToRoom(world, thing, room.getIdentityComponent().id);
-		} else if ((command.equals("look")) || (command.equals("l"))) {
+		} else if (command.equals("delete")) {
+			world.RemoveEntity(arguments.get(0));
+		}
+		else if ((command.equals("look")) || (command.equals("l"))) {
 			if (arguments.size() == 0) {
 				Entity room = world.GetPlayer().getLocationComponent().room(world);
 				if (room != null) {

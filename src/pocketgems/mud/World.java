@@ -1,8 +1,12 @@
 package pocketgems.mud;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
+import pocketgems.mud.components.Component;
 import pocketgems.mud.components.IdentityComponent;
+import pocketgems.mud.exceptions.ComponentNotFoundException;
 import pocketgems.mud.exceptions.EntityNotFoundException;
 
 /*
@@ -35,7 +39,30 @@ public class World {
 		}
 		return e;
 	}
-
+	
+	public void RemoveEntity(String id) throws EntityNotFoundException, ComponentNotFoundException {
+		if(id == GetPlayer().getIdentityComponent().id)
+		{
+			return;
+		}
+		Entity e = GetEntity(id);
+		e.CleanUp(this);
+		entitiesById.remove(id);
+	}
+	
+	public <T extends Component> ArrayList<T> getAllComponents(Class<T> componentType) {
+		ArrayList<T> components = new ArrayList<T>();
+		Set<String> keySet = entitiesById.keySet();
+		for(String key : keySet)
+		{
+			T comp = entitiesById.get(key).getComponentOrNull(componentType);
+			if(comp != null)
+			{
+				components.add(comp);
+			}
+		}
+		return components;
+	}
 	public Entity GetPlayer() {
 		return player;
 	}

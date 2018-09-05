@@ -1,9 +1,11 @@
 package pocketgems.mud;
 
 import java.util.HashMap;
+import java.util.Set;
 
 import pocketgems.mud.components.*;
 import pocketgems.mud.exceptions.ComponentNotFoundException;
+import pocketgems.mud.exceptions.EntityNotFoundException;
 
 /*
  * Entity
@@ -19,7 +21,18 @@ public class Entity {
 		components = new HashMap<Class, Component>();
 	}
 	
+	public void CleanUp(World world) throws EntityNotFoundException, ComponentNotFoundException {
+		Set<Class> keySet = components.keySet();
+		
+		for(Class componentClass : keySet)
+		{
+			Component component = components.get(componentClass);
+			component.CleanUp(world);
+		}
+	}
+	
 	public <T extends Component> T addComponent(T component) {
+		component.setEntity(this);
 		components.put(component.getClass(), component);
 		return component;
 	}

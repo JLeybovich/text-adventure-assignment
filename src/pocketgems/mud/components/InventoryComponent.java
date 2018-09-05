@@ -2,6 +2,11 @@ package pocketgems.mud.components;
 
 import java.util.HashSet;
 
+import pocketgems.mud.Entity;
+import pocketgems.mud.World;
+import pocketgems.mud.exceptions.ComponentNotFoundException;
+import pocketgems.mud.exceptions.EntityNotFoundException;
+
 /*
  * InventoryComponent
  * ==================
@@ -12,5 +17,11 @@ public class InventoryComponent extends Component {
 	
 	public InventoryComponent() {
 		itemIds = new HashSet<String>();
+	}
+	
+	public void CleanUp(World world) throws EntityNotFoundException, ComponentNotFoundException  {
+		for(String id : itemIds) {
+			world.RemoveEntity(id);
+		}
 	}
 }
